@@ -19,26 +19,40 @@ public class HtmlParser {
     public void parse(String html) throws IOException {
         eofEncountered = false;
         stringReader = new StringReader(html);
+
         char nextChar = readNext();
-        if (nextChar == '<'){
-            parseTag();
+        while ( !eofEncountered){
+            if (nextChar == '<'){
+                nextChar = parseTag();
+            }
+            else{
+                nextChar = parseTagContent(nextChar);
+            }
+            nextChar = skipSpaces(nextChar);
         }
 
         System.out.println(tokens.toString().replace(",", ""));
     }
 
-    private void parseTag() throws IOException {
+    private char parseTag() throws IOException {
         char nextCharacter = readNext();
         if (nextCharacter == '/'){
             tokens.add(new Token(TokenType.TAG_END));
             nextCharacter = readNext();
         }
         else if (Character.isWhitespace(nextCharacter)){
+            StringBuilder contentBuilder = new StringBuilder();
+            contentBuilder.append("<");
+            contentBuilder.append(nextCharacter);
             nextCharacter = readNext();
+            contentBuilder.append(nextCharacter);
             while (nextCharacter != '>'){
                 nextCharacter = readNext();
+                contentBuilder.append(nextCharacter);
             }
-            return;
+            tokens.add(new Token(TokenType.TAG_CONTENT, contentBuilder.toString()));
+            nextCharacter = readNext();
+            return nextCharacter;
         }
         else{
             tokens.add(new Token(TokenType.TAG_START));
@@ -48,14 +62,16 @@ public class HtmlParser {
         nextCharacter = skipSpaces(nextCharacter);
         if (nextCharacter == '>'){
             tokens.add(new Token(TokenType.TAG_CLOSING));
+            nextCharacter=readNext();
         }
         else{
             parseTagAttributesOrClosing(nextCharacter);
         }
-        nextCharacter = parseTagContent();
+        nextCharacter = parseTagContent(nextCharacter);
         if (nextCharacter == '<'){
-            parseTag();
+            nextCharacter = parseTag();
         }
+        return nextCharacter;
     }
 
     private char readNext() throws IOException {
@@ -113,9 +129,8 @@ public class HtmlParser {
         return nextChar;
     }
 
-    private char parseTagContent() throws IOException {
+    private char parseTagContent(char nextCharacter) throws IOException {
         StringBuilder content = new StringBuilder();
-        char nextCharacter = readNext();
         while (nextCharacter != '<'){
             if (nextCharacter!= '\n'){
                 content.append(nextCharacter);
