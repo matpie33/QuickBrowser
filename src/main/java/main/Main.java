@@ -1,14 +1,13 @@
 package main;
 
+import main.htmlparser.HtmlParser;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -17,6 +16,12 @@ import static java.net.URI.*;
 
 @SpringBootApplication
 public class Main  {
+
+    private HtmlParser htmlParser;
+
+    public Main(HtmlParser htmlParser) {
+        this.htmlParser = htmlParser;
+    }
 
     public static void main (String [] args) {
         SpringApplicationBuilder builder = new SpringApplicationBuilder(Main.class);
@@ -52,8 +57,9 @@ public class Main  {
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.statusCode());
-        System.out.println(response.body());
+        String html = response.body();
+        System.out.println(html);
+        htmlParser.parse(html);
     }
 
 }
