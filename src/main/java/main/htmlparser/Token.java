@@ -15,6 +15,10 @@ public class Token {
         this.content = content;
     }
 
+    public String getContent() {
+        return content;
+    }
+
     public TokenType getTokenType() {
         return tokenType;
     }

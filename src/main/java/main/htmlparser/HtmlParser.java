@@ -20,7 +20,7 @@ public class HtmlParser {
 
     private TokenType previousToken = TokenType.START;
 
-    public void parse (String html ) throws IOException {
+    public List<Token> parse (String html ) throws IOException {
         lineNumber = 1;
         stringReader = new StringReader(html);
         char nextCharacter = readNext();
@@ -99,7 +99,7 @@ public class HtmlParser {
             }
 
         }
-        System.out.println(tokens);
+        return tokens;
     }
 
     private char parsePreamble(char nextCharacter) throws IOException {

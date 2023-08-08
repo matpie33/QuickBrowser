@@ -1,6 +1,9 @@
 package main;
 
+import main.dom.DOMBuilder;
+import main.dom.DomElement;
 import main.htmlparser.HtmlParser;
+import main.htmlparser.Token;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
@@ -11,6 +14,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import static java.net.URI.*;
 
@@ -19,8 +23,11 @@ public class Main  {
 
     private HtmlParser htmlParser;
 
-    public Main(HtmlParser htmlParser) {
+    private DOMBuilder domBuilder;
+
+    public Main(HtmlParser htmlParser, DOMBuilder domBuilder) {
         this.htmlParser = htmlParser;
+        this.domBuilder = domBuilder;
     }
 
     public static void main (String [] args) {
@@ -59,7 +66,8 @@ public class Main  {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         String html = response.body();
         System.out.println(html);
-        htmlParser.parse(html);
+        List<Token> tokens = htmlParser.parse(html);
+        DomElement domElement = domBuilder.transformTokensToDOM(tokens);
     }
 
 }
