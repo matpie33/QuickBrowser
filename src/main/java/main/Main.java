@@ -48,7 +48,7 @@ public class Main  {
         frame.setVisible(true);
 
 
-        var uri = create("https://www.york.ac.uk/teaching/cws/wws/webpage1.html");
+        var uri = create("http://localhost/test2.html");
         var client = HttpClient.newHttpClient();
         var request = HttpRequest
                 .newBuilder()
